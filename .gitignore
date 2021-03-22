@@ -1,0 +1,10 @@
+node_modules
+/docs
+.sass-cache
+dist
+npm-debug*
+!.gitkeep
+.bundle
+.vscode
+.DS_Store
+.publish
