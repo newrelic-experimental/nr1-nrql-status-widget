@@ -6,13 +6,6 @@ NRQL Powered Status Widget
 
 ![NRQL Status Widget](images/nrql-status-widget-1.png)
 
-## Getting Started
-
-```
-npm install
-npm start
-```
-
 ## Features
 
 - Custom labelling for critical, warning, healthy
@@ -21,13 +14,38 @@ npm start
 - Togglability for all features
 - Regex matching for string values
 
-## Dashboard deployment
+## Getting Started Locally
+
+```
+npm install
+npm start
+```
+
+## Dashboard Deployment
+
+```
+npm install
+
+Generate a new uuid for the nerdpack
+nr1 nerdpack:uuid -gf
+
+Publish & Deploy
+nr1 nerdpack:publish
+nr1 nerdpack:deploy
+
+
+If you need to target a specific profile add the --profile flag eg.
+nr1 nerdpack:uuid -gf --profile=demotron-v2
+
+---
+
+Browse to apps, find this nerdpack visualization and click Manage Access.
+Select the relevant accounts to subscribe this visualization too.
+Once subscribed go back to apps and click Custom Visualization.
+You should then be able to see the widget option there to configure and add to a dashboard.
 
 https://developer.newrelic.com/build-apps/build-visualization#deploy-and-use-your-visualization
 
-```
-This needs to be deployed and subscribed in your account so that the custom visualizations can be added to dashboards.
-After this has been deployed, ensure you navigate to the app and subscribe the relevant accounts.
 ```
 
 ## Documentation
