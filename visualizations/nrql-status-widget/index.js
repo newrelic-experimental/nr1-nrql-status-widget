@@ -147,6 +147,10 @@ export default class NrqlStatusWidget extends React.Component {
                 metricValue = latestValue.toFixed(decimalPlaces);
               }
 
+              if (metricValue === undefined || metricValue === null) {
+                metricValue = "null";
+              }
+
               return (
                 <div
                   style={{

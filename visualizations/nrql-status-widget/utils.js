@@ -8,19 +8,32 @@ export const deriveValues = (nrqlData, config) => {
 
     let selectedGroup = "";
 
-    if (d.data[0][groupDisplayName]) {
+    if (
+      d.data[0][groupDisplayName] !== null &&
+      d.data[0][groupDisplayName] !== undefined
+    ) {
       values[groupDisplayName] = d.data[d.data.length - 1][groupDisplayName];
+      values.latestValue = values[groupDisplayName];
+      values.value = values.latestValue;
       selectedGroup = "groupDisplayName";
-    } else if (d.data[0][groupName]) {
+    } else if (
+      d.data[0][groupName] !== null &&
+      d.data[0][groupName] !== undefined
+    ) {
       values[groupName] = d.data[d.data.length - 1][groupName];
+      values.latestValue = values[groupName];
+      values.value = values.latestValue;
       selectedGroup = "groupName";
-    } else if (d.data[0][groupValue]) {
+    } else if (
+      d.data[0][groupValue] !== null &&
+      d.data[0][groupValue] !== undefined
+    ) {
       values[groupName] = d.data[d.data.length - 1][groupValue];
+      values.latestValue = values[groupValue];
+      values.value = vaues.latestValue;
       selectedGroup = "groupValue";
     }
 
-    values.latestValue = values[groupName];
-    values.value = values[groupName];
     assessValue(values, config);
 
     // perform decorations and calculations on existing values
