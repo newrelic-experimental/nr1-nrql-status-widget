@@ -4,6 +4,7 @@ import { deriveValues, generateErrorsAndConfig } from './utils';
 import EmptyState from './emptyState';
 import ErrorState from './errorState';
 import Timeline from './timeline';
+import BottomMetrics from './bottomMetrics';
 
 export default class NrqlStatusWidget extends React.Component {
   render() {
@@ -156,6 +157,8 @@ export default class NrqlStatusWidget extends React.Component {
                       </div>
                     )}
                   </div>
+
+                  <BottomMetrics width={width} mainProps={this.props} />
 
                   {displayTimeline && (
                     <Timeline

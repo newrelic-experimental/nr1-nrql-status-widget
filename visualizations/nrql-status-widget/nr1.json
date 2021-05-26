@@ -149,8 +149,73 @@
       "type": "number"
     },
     {
+      "name": "metricLabelLeft",
+      "title": "Bottom Left Metric - Optional: Metric Label",
+      "description": "Label to place under the metric",
+      "type": "string"
+    },
+    {
       "name": "metricSuffixLeft",
       "title": "Bottom Left Metric - Optional: Metric Suffix",
+      "description": "Label to place beside the metric",
+      "type": "string"
+    },{
+      "name": "queryRight",
+      "title": "Bottom Right Metric - Add an additional query to the bottom Right of the widget",
+      "description": "",
+      "type": "nrql"
+    },
+    {
+      "name": "thresholdDirectionRight",
+      "title": "Bottom Right Metric - Threshold Direction: above or below (default: above)",
+      "description": "value must be above or below",
+      "type": "string"
+    },
+    {
+      "name": "criticalThresholdRight",
+      "title": "Bottom Right Metric - Critical Threshold",
+      "description": "If above this value critical will be rendered",
+      "type": "string"
+    },
+    {
+      "name": "criticalLabelRight",
+      "title": "Bottom Right Metric - Optional: Critical Label",
+      "description": "Optionally render this label if critical threshold exceeded",
+      "type": "string"
+    },
+    {
+      "name": "warningThresholdRight",
+      "title": "Bottom Right Metric - Warning Threshold",
+      "description": "If above this value warning will be rendered",
+      "type": "string"
+    },
+    {
+      "name": "warningLabelRight",
+      "title": "Bottom Right Metric - Optional: Warning Label",
+      "description": "Optionally render this label if warning threshold exceeded",
+      "type": "string"
+    },
+    {
+      "name": "healthyLabelRight",
+      "title": "Bottom Right Metric - Optional: Healthy Label",
+      "description": "Optionally render this label instead of the value when healthy",
+      "type": "string"
+    },
+    {
+      "name": "decimalPlacesRight",
+      "title": "Bottom Right Metric - Decimal Places",
+      "description": "Set decimal places on metric",
+      "type": "number"
+    },
+    {
+      "name": "metricLabelRight",
+      "title": "Bottom Right Metric - Optional: Metric Label",
+      "description": "Label to place under the metric",
+      "type": "string"
+    },
+    {
+      "name": "metricSuffixRight",
+      "title": "Bottom Right Metric - Optional: Metric Suffix",
       "description": "Label to place beside the metric",
       "type": "string"
     }
