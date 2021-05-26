@@ -1,6 +1,6 @@
 import React from 'react';
 import { NrqlQuery, Spinner, AutoSizer, Tooltip } from 'nr1';
-import { deriveValues } from './utils';
+import { deriveValues, generateMainErrors } from './utils';
 import EmptyState from './emptyState';
 import ErrorState from './errorState';
 
@@ -24,7 +24,17 @@ export default class NrqlStatusWidget extends React.Component {
       decimalPlaces,
       onClickUrl
     } = this.props;
-    const errors = [];
+
+    const errors = generateMainErrors(
+      criticalLabel,
+      warningLabel,
+      healthyLabel,
+      warningThreshold,
+      criticalThreshold,
+      thresholdDirection,
+      accountId,
+      query
+    );
 
     const configuration = {
       criticalLabel,
@@ -33,61 +43,6 @@ export default class NrqlStatusWidget extends React.Component {
       warningThreshold,
       criticalThreshold
     };
-
-    if (isNaN(warningThreshold) && isNaN(criticalThreshold)) {
-      configuration.thresholdType = 'regex';
-    } else if (!isNaN(warningThreshold) && !isNaN(criticalThreshold)) {
-      configuration.thresholdType = 'numeric';
-      configuration.warningThreshold = parseFloat(warningThreshold);
-      configuration.criticalThreshold = parseFloat(criticalThreshold);
-      if (criticalThreshold && criticalThreshold === warningThreshold) {
-        errors.push(
-          'Critical and warning thresholds should not be the same value'
-        );
-      }
-    } else {
-      errors.push(
-        'Threshold values are mixed types, they must both be numerics or all strings'
-      );
-    }
-
-    if (configuration.thresholdType === 'numeric') {
-      if (['above', 'below'].includes(thresholdDirection)) {
-        configuration.thresholdDirection = thresholdDirection;
-      } else {
-        configuration.thresholdDirection = 'above';
-      }
-
-      if (
-        configuration.thresholdDirection === 'above' &&
-        configuration.warningThreshold > configuration.criticalThreshold
-      ) {
-        errors.push(
-          'Warning threshold is higher than critical threshold, correct this or set your threshold direction to below'
-        );
-      } else if (
-        configuration.thresholdDirection === 'below' &&
-        configuration.warningThreshold < configuration.criticalThreshold
-      ) {
-        errors.push(
-          'Warning threshold is less than critical threshold, correct this or set your threshold direction to above'
-        );
-      }
-    }
-
-    if (!accountId) errors.push('Required: Account ID');
-    if (!query) {
-      errors.push('Required: Query eg. FROM TransactionError SELECT count(*)');
-    } else {
-      const lowerQuery = query.toLowerCase();
-      if (lowerQuery.includes('timeseries') || lowerQuery.includes('facet')) {
-        errors.push(
-          'Query contains timeseries and/or facet and should be removed'
-        );
-      }
-    }
-    if (!criticalThreshold) errors.push('Required: Critical threshold');
-    if (!warningThreshold) errors.push('Required: Warning threshold');
 
     if (errors.length > 0) {
       return <EmptyState errors={errors} />;
