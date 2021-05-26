@@ -24,8 +24,51 @@ export default class NrqlStatusWidget extends React.Component {
       metricLabel,
       metricSuffix,
       decimalPlaces,
-      onClickUrl
+      onClickUrl,
+      queryLeft,
+      thresholdDirectionLeft,
+      criticalThresholdLeft,
+      criticalLabelLeft,
+      warningThresholdLeft,
+      warningLabelLeft,
+      healthyLabelLeft,
+      queryRight,
+      thresholdDirectionRight,
+      criticalThresholdRight,
+      criticalLabelRight,
+      warningThresholdRight,
+      warningLabelRight,
+      healthyLabelRight
     } = this.props;
+
+    let leftMetric = null;
+    let rightMetric = null;
+
+    if (queryLeft) {
+      leftMetric = generateErrorsAndConfig(
+        criticalLabelLeft,
+        warningLabelLeft,
+        healthyLabelLeft,
+        warningThresholdLeft,
+        criticalThresholdLeft,
+        thresholdDirectionLeft,
+        accountId,
+        queryLeft
+      );
+    }
+
+    if (queryRight) {
+      rightMetric = generateErrorsAndConfig(
+        criticalLabelRight,
+        warningLabelRight,
+        healthyLabelRight,
+        warningThresholdRight,
+        criticalThresholdRight,
+        thresholdDirectionRight,
+        accountId,
+        queryRight
+      );
+    }
 
     const { errors, configuration } = generateErrorsAndConfig(
       criticalLabel,
@@ -123,7 +166,8 @@ export default class NrqlStatusWidget extends React.Component {
                           fontSize: '17vh',
                           width,
                           textOverflow: 'ellipsis',
-                          overflow: 'hidden'
+                          overflow: 'hidden',
+                          marginTop: queryRight || queryLeft ? '-19vh' : '0px'
                         }}
                       >
                         {metricValue}
@@ -159,6 +203,8 @@ export default class NrqlStatusWidget extends React.Component {
                   </div>
 
                   <BottomMetrics
+                    leftMetric={leftMetric}
+                    rightMetric={rightMetric}
                     displayTimeline={displayTimeline}
                     width={width}
                     mainProps={this.props}
