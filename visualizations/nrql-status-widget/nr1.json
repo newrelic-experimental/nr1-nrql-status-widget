@@ -88,7 +88,6 @@
       "description": "Label to place beside the metric",
       "type": "string"
     },
-
     {
       "name": "onClickUrl",
       "title": "Optional: On Click URL",
@@ -99,6 +98,60 @@
       "name": "untilClause",
       "title": "Optional: UNTIL clause",
       "description": "Optionally add an UNTIL clause to assist in excluding data",
+      "type": "string"
+    },
+    {
+      "name": "subQueryLeft",
+      "title": "Bottom Left Metric - Add an additional query to the bottom left of the widget",
+      "description": "",
+      "type": "nrql"
+    },
+    {
+      "name": "thresholdDirectionLeft",
+      "title": "Bottom Left Metric - Threshold Direction: above or below (default: above)",
+      "description": "value must be above or below",
+      "type": "string"
+    },
+    {
+      "name": "criticalThresholdLeft",
+      "title": "Bottom Left Metric - Critical Threshold",
+      "description": "If above this value critical will be rendered",
+      "type": "string"
+    },
+    {
+      "name": "criticalLabelLeft",
+      "title": "Bottom Left Metric - Optional: Critical Label",
+      "description": "Optionally render this label if critical threshold exceeded",
+      "type": "string"
+    },
+    {
+      "name": "warningThresholdLeft",
+      "title": "Bottom Left Metric - Warning Threshold",
+      "description": "If above this value warning will be rendered",
+      "type": "string"
+    },
+    {
+      "name": "warningLabelLeft",
+      "title": "Bottom Left Metric - Optional: Warning Label",
+      "description": "Optionally render this label if warning threshold exceeded",
+      "type": "string"
+    },
+    {
+      "name": "healthyLabelLeft",
+      "title": "Bottom Left Metric - Optional: Healthy Label",
+      "description": "Optionally render this label instead of the value when healthy",
+      "type": "string"
+    },
+    {
+      "name": "decimalPlacesLeft",
+      "title": "Bottom Left Metric - Decimal Places",
+      "description": "Set decimal places on metric",
+      "type": "number"
+    },
+    {
+      "name": "metricSuffixLeft",
+      "title": "Bottom Left Metric - Optional: Metric Suffix",
+      "description": "Label to place beside the metric",
       "type": "string"
     }
   ]
