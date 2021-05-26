@@ -101,7 +101,7 @@
       "type": "string"
     },
     {
-      "name": "subQueryLeft",
+      "name": "queryLeft",
       "title": "Bottom Left Metric - Add an additional query to the bottom left of the widget",
       "description": "",
       "type": "nrql"

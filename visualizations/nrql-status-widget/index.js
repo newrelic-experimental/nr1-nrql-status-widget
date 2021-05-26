@@ -1,8 +1,9 @@
 import React from 'react';
-import { NrqlQuery, Spinner, AutoSizer, Tooltip } from 'nr1';
-import { deriveValues, generateMainErrors } from './utils';
+import { NrqlQuery, Spinner, AutoSizer } from 'nr1';
+import { deriveValues, generateErrorsAndConfig } from './utils';
 import EmptyState from './emptyState';
 import ErrorState from './errorState';
+import Timeline from './timeline';
 
 export default class NrqlStatusWidget extends React.Component {
   render() {
@@ -25,7 +26,7 @@ export default class NrqlStatusWidget extends React.Component {
       onClickUrl
     } = this.props;
 
-    const errors = generateMainErrors(
+    const { errors, configuration } = generateErrorsAndConfig(
       criticalLabel,
       warningLabel,
       healthyLabel,
@@ -35,14 +36,6 @@ export default class NrqlStatusWidget extends React.Component {
       accountId,
       query
     );
-
-    const configuration = {
-      criticalLabel,
-      warningLabel,
-      healthyLabel,
-      warningThreshold,
-      criticalThreshold
-    };
 
     if (errors.length > 0) {
       return <EmptyState errors={errors} />;
@@ -165,46 +158,11 @@ export default class NrqlStatusWidget extends React.Component {
                   </div>
 
                   {displayTimeline && (
-                    <div
-                      className="flex-item"
-                      style={{
-                        position: 'absolute',
-                        bottom: '0px',
-                        fontSize: displayMetric ? '10vh' : '12vh',
-                        display: 'inline-flex',
-                        paddingTop: '2vh',
-                        paddingBottom: '2vh',
-                        width,
-                        // backgroundColor: "black",
-                        backgroundColor: '#272727',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {timeseries.map((ts, i) => {
-                        const beginDate = new Date(ts.begin_time);
-                        const endDate = new Date(ts.end_time);
-                        const hoverText = `${beginDate.toLocaleTimeString()} - ${endDate.toLocaleTimeString()}`;
-
-                        return (
-                          <Tooltip
-                            text={hoverText}
-                            key={i}
-                            placementType={Tooltip.PLACEMENT_TYPE.TOP}
-                          >
-                            <div
-                              className={`${ts.status}-solid-bg`}
-                              style={{
-                                width: '2.5vh',
-                                height: '5.75vh',
-                                marginRight: '1.75vh',
-                                border: '1px solid white'
-                              }}
-                            />
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
+                    <Timeline
+                      displayMetric={displayMetric}
+                      timeseries={timeseries}
+                      width={width}
+                    />
                   )}
                 </div>
               );

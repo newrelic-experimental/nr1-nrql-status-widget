@@ -95,7 +95,7 @@ export const assessValue = (value, config) => {
   }
 };
 
-export const generateMainErrors = (
+export const generateErrorsAndConfig = (
   criticalLabel,
   warningLabel,
   healthyLabel,
@@ -170,5 +170,5 @@ export const generateMainErrors = (
   if (!criticalThreshold) errors.push('Required: Critical threshold');
   if (!warningThreshold) errors.push('Required: Warning threshold');
 
-  return errors;
+  return { errors, configuration };
 };
