@@ -4,7 +4,7 @@ import NrqlMetric from './bottomNrqlMetric';
 
 export default class BottomMetrics extends React.Component {
   render() {
-    const { width, mainProps } = this.props;
+    const { width, mainProps, displayTimeline } = this.props;
 
     const {
       accountId,
@@ -70,11 +70,11 @@ export default class BottomMetrics extends React.Component {
         className="flex-item"
         style={{
           position: 'absolute',
-          bottom: '6.75vh',
+          bottom: displayTimeline ? '6.75vh' : '0px',
           fontSize: '10vh',
           display: 'inline-flex',
           paddingTop: '2vh',
-          paddingBottom: '2vh',
+          paddingBottom: displayTimeline ? '2vh' : '0px',
           width,
           // alignItems: 'center',
           justifyContent: 'space-around'

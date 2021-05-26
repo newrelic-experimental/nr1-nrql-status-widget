@@ -158,7 +158,11 @@ export default class NrqlStatusWidget extends React.Component {
                     )}
                   </div>
 
-                  <BottomMetrics width={width} mainProps={this.props} />
+                  <BottomMetrics
+                    displayTimeline={displayTimeline}
+                    width={width}
+                    mainProps={this.props}
+                  />
 
                   {displayTimeline && (
                     <Timeline
