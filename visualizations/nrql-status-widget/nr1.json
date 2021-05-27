@@ -101,6 +101,45 @@
       "type": "string"
     },
     {
+      "name": "modalQueries",
+      "title": "Modal Chart Queries",
+      "type": "collection",
+      "items": [
+        {
+          "name": "chartTitle",
+          "title": "Chart Title",
+          "description": "Chart title",
+          "type": "string"
+        },
+        {
+          "name": "query",
+          "title": "Query",
+          "description": "NRQL query for visualization",
+          "type": "nrql"
+        },
+        {
+          "name": "chartType",
+          "title": "Chart Type",
+          "description": "Chart Type",
+          "type": "enum",
+          "items": [
+            {
+              "title": "Select a chart",
+              "value": null
+            },
+            {
+              "title": "line",
+              "value": "line"
+            },
+            {
+              "title": "billboard",
+              "value": "billboard"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "queryLeft",
       "title": "Bottom Left Metric - Add an additional query to the bottom left of the widget",
       "description": "",

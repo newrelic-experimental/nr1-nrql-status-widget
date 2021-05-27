@@ -5,9 +5,22 @@ import EmptyState from './emptyState';
 import ErrorState from './errorState';
 import Timeline from './timeline';
 import BottomMetrics from './bottomMetrics';
+import ModalCharts from './modalCharts';
 
 export default class NrqlStatusWidget extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalOpen: false
+    };
+  }
+
+  modalClose = () => {
+    this.setState({ modalOpen: false });
+  };
+
   render() {
+    const { modalOpen } = this.state;
     const {
       accountId,
       query,
@@ -38,8 +51,10 @@ export default class NrqlStatusWidget extends React.Component {
       criticalLabelRight,
       warningThresholdRight,
       warningLabelRight,
-      healthyLabelRight
+      healthyLabelRight,
+      modalQueries
     } = this.props;
+    const validModalQueries = modalQueries.filter(q => q.query && q.chartType);
 
     let leftMetric = null;
     let rightMetric = null;
@@ -103,124 +118,141 @@ export default class NrqlStatusWidget extends React.Component {
     // eslint-disable-next-line
     console.log(`Query: ${finalQuery}`);
 
+    let chartOnClick;
+
+    if (onClickUrl) {
+      chartOnClick = () => window.open(onClickUrl, '_blank');
+    }
+
+    if (validModalQueries.length > 0) {
+      chartOnClick = () => this.setState({ modalOpen: true });
+    }
+
     return (
       <AutoSizer>
         {({ width, height }) => (
-          <NrqlQuery
-            query={finalQuery}
-            accountId={parseInt(accountId)}
-            pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
-          >
-            {({ data, loading, error }) => {
-              if (loading) {
-                return <Spinner />;
-              }
+          <>
+            <ModalCharts
+              open={modalOpen}
+              close={this.modalClose}
+              queries={validModalQueries}
+              accountId={accountId}
+            />
+            <NrqlQuery
+              query={finalQuery}
+              accountId={parseInt(accountId)}
+              pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
+            >
+              {({ data, loading, error }) => {
+                if (loading) {
+                  return <Spinner />;
+                }
 
-              if (error) {
+                if (error) {
+                  return (
+                    <ErrorState
+                      error={error.message || ''}
+                      query={finalQuery}
+                    />
+                  );
+                }
+
+                const derivedValues = deriveValues(data, configuration);
+
+                const {
+                  status,
+                  statusLabel,
+                  latestValue,
+                  timeseries
+                } = derivedValues;
+
+                let metricValue = latestValue;
+                if (!isNaN(latestValue) && decimalPlaces !== undefined) {
+                  metricValue = latestValue.toFixed(decimalPlaces);
+                }
+
+                if (metricValue === undefined || metricValue === null) {
+                  metricValue = 'null';
+                }
+
                 return (
-                  <ErrorState error={error.message || ''} query={finalQuery} />
-                );
-              }
+                  <div
+                    style={{
+                      width,
+                      height,
+                      maxWidth: width,
+                      maxHeight: height,
+                      cursor: chartOnClick ? 'pointer' : 'default'
+                    }}
+                    className={`${status}-bg flex-container`}
+                    onClick={chartOnClick}
+                  >
+                    <div className="flex-col">
+                      {displayMetric && (
+                        <div
+                          title={metricValue}
+                          className="flex-item"
+                          style={{
+                            color: 'white',
+                            fontSize: '17vh',
+                            width,
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            marginTop: queryRight || queryLeft ? '-19vh' : '0px'
+                          }}
+                        >
+                          {metricValue}
+                          {metricSuffix && (
+                            <div
+                              style={{
+                                display: 'inline',
+                                fontSize: '14vh',
+                                verticalAlign: 'top'
+                              }}
+                            >
+                              &nbsp;{metricSuffix}
+                            </div>
+                          )}
+                          {metricLabel && (
+                            <div style={{ marginTop: '-5vh', fontSize: '6vh' }}>
+                              {metricLabel}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {statusLabel && (
+                        <div
+                          className="flex-item"
+                          style={{
+                            color: 'white',
+                            fontSize: displayMetric ? '10vh' : '17vh'
+                          }}
+                        >
+                          {statusLabel}
+                        </div>
+                      )}
+                    </div>
 
-              const derivedValues = deriveValues(data, configuration);
+                    <BottomMetrics
+                      leftMetric={leftMetric}
+                      rightMetric={rightMetric}
+                      displayTimeline={displayTimeline}
+                      width={width}
+                      mainProps={this.props}
+                    />
 
-              const {
-                status,
-                statusLabel,
-                latestValue,
-                timeseries
-              } = derivedValues;
-
-              let metricValue = latestValue;
-              if (!isNaN(latestValue) && decimalPlaces !== undefined) {
-                metricValue = latestValue.toFixed(decimalPlaces);
-              }
-
-              if (metricValue === undefined || metricValue === null) {
-                metricValue = 'null';
-              }
-
-              return (
-                <div
-                  style={{
-                    width,
-                    height,
-                    maxWidth: width,
-                    maxHeight: height,
-                    cursor: onClickUrl ? 'pointer' : 'default'
-                  }}
-                  className={`${status}-bg flex-container`}
-                  onClick={
-                    onClickUrl
-                      ? () => window.open(onClickUrl, '_blank')
-                      : undefined
-                  }
-                >
-                  <div className="flex-col">
-                    {displayMetric && (
-                      <div
-                        title={metricValue}
-                        className="flex-item"
-                        style={{
-                          color: 'white',
-                          fontSize: '17vh',
-                          width,
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          marginTop: queryRight || queryLeft ? '-19vh' : '0px'
-                        }}
-                      >
-                        {metricValue}
-                        {metricSuffix && (
-                          <div
-                            style={{
-                              display: 'inline',
-                              fontSize: '14vh',
-                              verticalAlign: 'top'
-                            }}
-                          >
-                            &nbsp;{metricSuffix}
-                          </div>
-                        )}
-                        {metricLabel && (
-                          <div style={{ marginTop: '-5vh', fontSize: '6vh' }}>
-                            {metricLabel}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {statusLabel && (
-                      <div
-                        className="flex-item"
-                        style={{
-                          color: 'white',
-                          fontSize: displayMetric ? '10vh' : '17vh'
-                        }}
-                      >
-                        {statusLabel}
-                      </div>
+                    {displayTimeline && (
+                      <Timeline
+                        displayMetric={displayMetric}
+                        timeseries={timeseries}
+                        width={width}
+                      />
                     )}
                   </div>
-
-                  <BottomMetrics
-                    leftMetric={leftMetric}
-                    rightMetric={rightMetric}
-                    displayTimeline={displayTimeline}
-                    width={width}
-                    mainProps={this.props}
-                  />
-
-                  {displayTimeline && (
-                    <Timeline
-                      displayMetric={displayMetric}
-                      timeseries={timeseries}
-                      width={width}
-                    />
-                  )}
-                </div>
-              );
-            }}
-          </NrqlQuery>
+                );
+              }}
+            </NrqlQuery>
+          </>
         )}
       </AutoSizer>
     );
