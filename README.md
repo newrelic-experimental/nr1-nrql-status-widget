@@ -13,6 +13,8 @@ NRQL Powered Status Widget
 - Timeline
 - Togglability for all features
 - Regex matching for string values
+- Configurable OnClick actions to url or Modal
+- Modal can be provided any number of additional NRQL queries to be displayed
 
 ## Getting Started Locally
 
