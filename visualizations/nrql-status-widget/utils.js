@@ -28,7 +28,7 @@ export const deriveValues = (nrqlData, config) => {
       d.data[0][groupValue] !== null &&
       d.data[0][groupValue] !== undefined
     ) {
-      values[groupName] = d.data[d.data.length - 1][groupValue];
+      values[groupValue] = d.data[d.data.length - 1][groupValue];
       values.latestValue = values[groupValue];
       values.value = values.latestValue;
       selectedGroup = 'groupValue';
@@ -43,7 +43,7 @@ export const deriveValues = (nrqlData, config) => {
         currentValue.value = value[groupName];
       } else if (selectedGroup === 'groupDisplayName') {
         currentValue.value = value[groupDisplayName];
-      } else if (selectedGroup === 'groupDisplayName') {
+      } else if (selectedGroup === 'groupValue') {
         currentValue.value = value[groupValue];
       }
       assessValue(currentValue, config);
