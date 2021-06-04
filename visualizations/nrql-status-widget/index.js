@@ -11,7 +11,8 @@ export default class NrqlStatusWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalOpen: false
+      modalOpen: false,
+      initialized: false
     };
   }
 
@@ -20,7 +21,7 @@ export default class NrqlStatusWidget extends React.Component {
   };
 
   render() {
-    const { modalOpen } = this.state;
+    const { modalOpen, initialized } = this.state;
     const {
       accountId,
       query,
@@ -152,13 +153,25 @@ export default class NrqlStatusWidget extends React.Component {
                   return <Spinner />;
                 }
 
-                if (error) {
+                if (error && initialized === false) {
                   return (
                     <ErrorState
                       error={error.message || ''}
                       query={finalQuery}
                     />
                   );
+                }
+
+                if (initialized === false) {
+                  this.setState({ initialized: true });
+                }
+
+                if (initialized === true && error) {
+                  setTimeout(() => {
+                    // eslint-disable-next-line
+                    console.log(`NRQL error for ${finalQuery} \nError: ${error}\nReloading...`);
+                    window.location.reload();
+                  }, 5000);
                 }
 
                 const derivedValues = deriveValues(data, configuration);

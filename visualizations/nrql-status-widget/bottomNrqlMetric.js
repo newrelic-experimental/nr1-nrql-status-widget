@@ -4,6 +4,13 @@ import ErrorState from './errorState';
 import { deriveValues } from './utils';
 
 export default class NrqlMetric extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      initialized: false
+    };
+  }
+
   render() {
     const {
       fullWidth,
@@ -15,6 +22,7 @@ export default class NrqlMetric extends React.Component {
       metricSuffix,
       metricLabel
     } = this.props;
+    const { initialized } = this.state;
 
     return (
       <NrqlQuery
@@ -27,8 +35,20 @@ export default class NrqlMetric extends React.Component {
             return <Spinner />;
           }
 
-          if (error) {
+          if (error && initialized === false) {
             return <ErrorState error={error.message || ''} query={query} />;
+          }
+
+          if (initialized === false) {
+            this.setState({ initialized: true });
+          }
+
+          if (initialized === true && error) {
+            setTimeout(() => {
+              // eslint-disable-next-line
+              console.log(`NRQL error for ${finalQuery} \nError: ${error}\nReloading...`);
+              window.location.reload();
+            }, 5000);
           }
 
           const derivedValues = deriveValues(data, configuration);
