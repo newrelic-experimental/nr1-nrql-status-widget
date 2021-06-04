@@ -147,8 +147,9 @@ export default class NrqlMetric extends React.Component {
                   <div
                     className="flex-item"
                     style={{
+                      marginTop: '-3.5vh',
                       color: 'white',
-                      fontSize: '10vh',
+                      fontSize: '9vh',
                       textOverflow: 'ellipsis',
                       overflow: 'hidden'
                     }}
