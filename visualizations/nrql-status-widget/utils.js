@@ -103,7 +103,9 @@ export const generateErrorsAndConfig = (
   criticalThreshold,
   thresholdDirection,
   accountId,
-  query
+  query,
+  onClickUrl,
+  modalQueries
 ) => {
   const errors = [];
 
@@ -114,6 +116,26 @@ export const generateErrorsAndConfig = (
     warningThreshold,
     criticalThreshold
   };
+
+  if (
+    onClickUrl &&
+    !onClickUrl.startsWith('http://') &&
+    !onClickUrl.startsWith('https://')
+  ) {
+    errors.push('On Click URL missing http:// or https://');
+  }
+
+  modalQueries.forEach((q, i) => {
+    if (['line', 'area'].includes(q.chartType)) {
+      if (!q.query.includes('TIMESERIES')) {
+        errors.push(`Modal query ${i + 1} - missing TIMESERIES keyword`);
+      }
+    } else if (q.query.includes('TIMESERIES')) {
+      errors.push(
+        `Modal query ${i + 1} - should not contain TIMESERIES keyword`
+      );
+    }
+  });
 
   if (isNaN(warningThreshold) && isNaN(criticalThreshold)) {
     configuration.thresholdType = 'regex';

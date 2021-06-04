@@ -93,7 +93,9 @@ export default class NrqlStatusWidget extends React.Component {
       criticalThreshold,
       thresholdDirection,
       accountId,
-      query
+      query,
+      onClickUrl,
+      validModalQueries
     );
 
     if (errors.length > 0) {
