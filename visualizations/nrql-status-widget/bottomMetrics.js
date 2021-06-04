@@ -13,15 +13,19 @@ export default class BottomMetrics extends React.Component {
 
     const {
       accountId,
-      queryLeft,
       metricSuffixLeft,
       decimalPlacesLeft,
       metricLabelLeft,
-      queryRight,
       metricSuffixRight,
       decimalPlacesRight,
       metricLabelRight
     } = mainProps;
+
+    let { queryRight, queryLeft } = mainProps;
+
+    // force null since custom viz props don't clear properly and leave a FROM clause
+    if ((queryRight || '').length <= 4) queryRight = null;
+    if ((queryLeft || '').length <= 4) queryLeft = null;
 
     if (queryRight === null && queryLeft === null) {
       return '';

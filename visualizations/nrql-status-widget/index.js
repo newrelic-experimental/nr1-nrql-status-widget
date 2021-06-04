@@ -54,7 +54,9 @@ export default class NrqlStatusWidget extends React.Component {
       healthyLabelRight,
       modalQueries
     } = this.props;
-    const validModalQueries = modalQueries.filter(q => q.query && q.chartType);
+    const validModalQueries = modalQueries.filter(
+      q => q.query && q.chartType && q.query.length > 5
+    );
 
     let leftMetric = null;
     let rightMetric = null;
