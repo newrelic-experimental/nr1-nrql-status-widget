@@ -94,7 +94,7 @@ export default class NrqlMetric extends React.Component {
                       &nbsp;{metricSuffix}
                     </div>
                   )}
-                  {metricLabel && (
+                  {metricLabel !== null && metricLabel !== undefined && (
                     <div
                       style={{
                         marginTop: '-5vh',
@@ -103,7 +103,7 @@ export default class NrqlMetric extends React.Component {
                         overflow: 'hidden'
                       }}
                     >
-                      {metricLabel}
+                      {metricLabel || <span>&nbsp;</span>}
                     </div>
                   )}
                 </div>

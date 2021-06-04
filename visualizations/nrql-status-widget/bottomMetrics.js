@@ -15,13 +15,16 @@ export default class BottomMetrics extends React.Component {
       accountId,
       metricSuffixLeft,
       decimalPlacesLeft,
-      metricLabelLeft,
       metricSuffixRight,
-      decimalPlacesRight,
-      metricLabelRight
+      decimalPlacesRight
     } = mainProps;
 
-    let { queryRight, queryLeft } = mainProps;
+    let {
+      queryRight,
+      queryLeft,
+      metricLabelRight,
+      metricLabelLeft
+    } = mainProps;
 
     // force null since custom viz props don't clear properly and leave a FROM clause
     if ((queryRight || '').length <= 4) queryRight = null;
@@ -32,6 +35,10 @@ export default class BottomMetrics extends React.Component {
     }
 
     const fullWidth = !(queryRight && queryLeft);
+
+    // blank gap appears if label is used on one and not the other
+    if (metricLabelRight && !metricLabelLeft) metricLabelLeft = '';
+    if (metricLabelLeft && !metricLabelRight) metricLabelRight = '';
 
     return (
       <div
