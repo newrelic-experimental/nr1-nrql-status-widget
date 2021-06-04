@@ -95,14 +95,16 @@ export default class NrqlMetric extends React.Component {
           }
 
           if (direction === 'right' && metricLabelLeft) {
-            metricLabel = '';
+            metricLabel = metricLabel || '';
           } else if (direction === 'left' && metricLabelRight) {
-            metricLabel = '';
+            metricLabel = metricLabel || '';
           }
+
+          const availWidth = fullWidth ? width : width / 2;
 
           return (
             <div
-              style={{ width: fullWidth ? width : width / 2 }}
+              style={{ width: availWidth }}
               className={`${status}-bg flex-container`}
             >
               <div className="flex-col">
@@ -113,7 +115,8 @@ export default class NrqlMetric extends React.Component {
                     color: 'white',
                     fontSize: '12vh',
                     textOverflow: 'ellipsis',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    width: availWidth
                   }}
                 >
                   {metricValue}
@@ -152,7 +155,8 @@ export default class NrqlMetric extends React.Component {
                       color: 'white',
                       fontSize: '9vh',
                       textOverflow: 'ellipsis',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      width: availWidth
                     }}
                   >
                     {statusLabel || <span>&nbsp;</span>}
