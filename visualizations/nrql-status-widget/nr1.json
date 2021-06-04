@@ -128,12 +128,56 @@
               "value": null
             },
             {
-              "title": "line",
-              "value": "line"
+              "title": "area",
+              "value": "area"
+            },
+            {
+              "title": "bar",
+              "value": "bar"
             },
             {
               "title": "billboard",
               "value": "billboard"
+            },
+            {
+              "title": "funnel",
+              "value": "funnel"
+            },
+            {
+              "title": "heatmap",
+              "value": "heatmap"
+            },
+            {
+              "title": "histogram",
+              "value": "histogram"
+            },
+            {
+              "title": "json",
+              "value": "json"
+            },
+            {
+              "title": "line",
+              "value": "line"
+            },
+            {
+              "title": "pie",
+              "value": "pie"
+            },
+            {
+              "title": "scatter",
+              "value": "scatter"
+            },
+            {
+              "title": "sparkline",
+              "value": "sparkline"
+            },
+            {
+              "title": "stackedbar",
+              "value": "stackedbar"
+            },
+            {
+              "title": "table",
+              "value": "table"
             }
           ]
         }
@@ -198,7 +242,8 @@
       "title": "Bottom Left Metric - Optional: Metric Suffix",
       "description": "Label to place beside the metric",
       "type": "string"
-    },{
+    },
+    {
       "name": "queryRight",
       "title": "Bottom Right Metric - Add an additional query to the bottom Right of the widget",
       "description": "",
