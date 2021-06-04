@@ -211,14 +211,23 @@ export default class NrqlStatusWidget extends React.Component {
                               style={{
                                 display: 'inline',
                                 fontSize: '14vh',
-                                verticalAlign: 'top'
+                                verticalAlign: 'top',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden'
                               }}
                             >
                               &nbsp;{metricSuffix}
                             </div>
                           )}
                           {metricLabel && (
-                            <div style={{ marginTop: '-5vh', fontSize: '6vh' }}>
+                            <div
+                              style={{
+                                marginTop: '-5vh',
+                                fontSize: '6vh',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden'
+                              }}
+                            >
                               {metricLabel}
                             </div>
                           )}
@@ -229,7 +238,9 @@ export default class NrqlStatusWidget extends React.Component {
                           className="flex-item"
                           style={{
                             color: 'white',
-                            fontSize: displayMetric ? '10vh' : '17vh'
+                            fontSize: displayMetric ? '10vh' : '17vh',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden'
                           }}
                         >
                           {statusLabel}

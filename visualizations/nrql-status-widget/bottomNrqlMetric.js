@@ -66,14 +66,23 @@ export default class NrqlMetric extends React.Component {
                       style={{
                         display: 'inline',
                         fontSize: '10vh',
-                        verticalAlign: 'top'
+                        verticalAlign: 'top',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden'
                       }}
                     >
                       &nbsp;{metricSuffix}
                     </div>
                   )}
                   {metricLabel && (
-                    <div style={{ marginTop: '-5vh', fontSize: '6vh' }}>
+                    <div
+                      style={{
+                        marginTop: '-5vh',
+                        fontSize: '6vh',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden'
+                      }}
+                    >
                       {metricLabel}
                     </div>
                   )}
@@ -83,7 +92,9 @@ export default class NrqlMetric extends React.Component {
                     className="flex-item"
                     style={{
                       color: 'white',
-                      fontSize: '10vh'
+                      fontSize: '10vh',
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden'
                     }}
                   >
                     {statusLabel}
