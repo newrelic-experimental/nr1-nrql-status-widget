@@ -198,15 +198,14 @@ export default class NrqlStatusWidget extends React.Component {
                       width,
                       height,
                       maxWidth: width,
-                      maxHeight: height,
-                      cursor: chartOnClick ? 'pointer' : 'default'
+                      maxHeight: height
                     }}
                     className={`${status}-bg flex-container`}
-                    onClick={chartOnClick}
                   >
                     <div className="flex-col">
                       {displayMetric && (
                         <div
+                          onClick={chartOnClick}
                           title={metricValue}
                           className="flex-item"
                           style={{
@@ -215,7 +214,9 @@ export default class NrqlStatusWidget extends React.Component {
                             width,
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
-                            marginTop: queryRight || queryLeft ? '-19vh' : '0px'
+                            marginTop:
+                              queryRight || queryLeft ? '-19vh' : '0px',
+                            cursor: chartOnClick ? 'pointer' : 'default'
                           }}
                         >
                           {metricValue}
