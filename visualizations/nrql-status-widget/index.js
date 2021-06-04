@@ -267,6 +267,7 @@ export default class NrqlStatusWidget extends React.Component {
                       rightMetric={rightMetric}
                       displayTimeline={displayTimeline}
                       width={width}
+                      height={height}
                       mainProps={this.props}
                     />
 

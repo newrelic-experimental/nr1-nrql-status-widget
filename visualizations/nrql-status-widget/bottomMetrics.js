@@ -2,6 +2,16 @@ import React from 'react';
 import NrqlMetric from './bottomNrqlMetric';
 
 export default class BottomMetrics extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      rightStatus: null,
+      leftStatus: null
+    };
+  }
+
+  updateState = state => this.setState(state);
+
   render() {
     const {
       leftMetric,
@@ -57,26 +67,38 @@ export default class BottomMetrics extends React.Component {
       >
         {queryLeft && (
           <NrqlMetric
+            direction="left"
             fullWidth={fullWidth}
             width={width}
             query={queryLeft}
             accountId={accountId}
             configuration={leftMetric.configuration}
+            altConfiguration={rightMetric.configuration}
             decimalPlaces={decimalPlacesLeft}
             metricSuffix={metricSuffixLeft}
             metricLabel={metricLabelLeft}
+            updateState={this.updateState}
+            rightStatus={this.state.rightStatus}
+            leftStatus={this.state.leftStatus}
+            metricLabelRight={metricLabelRight}
           />
         )}
         {queryRight && (
           <NrqlMetric
+            direction="right"
             fullWidth={fullWidth}
             width={width}
             query={queryRight}
             accountId={accountId}
             configuration={rightMetric.configuration}
+            altConfiguration={leftMetric.configuration}
             decimalPlaces={decimalPlacesRight}
             metricSuffix={metricSuffixRight}
             metricLabel={metricLabelRight}
+            updateState={this.updateState}
+            rightStatus={this.state.rightStatus}
+            leftStatus={this.state.leftStatus}
+            metricLabelLeft={metricLabelLeft}
           />
         )}
       </div>

@@ -13,6 +13,9 @@ export default class NrqlMetric extends React.Component {
 
   render() {
     const {
+      direction,
+      rightStatus,
+      leftStatus,
       fullWidth,
       width,
       query,
@@ -20,8 +23,12 @@ export default class NrqlMetric extends React.Component {
       configuration,
       decimalPlaces,
       metricSuffix,
-      metricLabel
+      updateState,
+      metricLabelLeft,
+      metricLabelRight
     } = this.props;
+    let { metricLabel } = this.props;
+
     const { initialized } = this.state;
 
     return (
@@ -53,7 +60,26 @@ export default class NrqlMetric extends React.Component {
 
           const derivedValues = deriveValues(data, configuration);
 
-          const { status, statusLabel, latestValue } = derivedValues;
+          const { status, latestValue } = derivedValues;
+          let statusLabel = derivedValues.statusLabel;
+
+          if (direction === 'right' && rightStatus !== statusLabel) {
+            updateState({ rightStatus: statusLabel });
+          } else if (direction === 'left' && leftStatus !== statusLabel) {
+            updateState({ leftStatus: statusLabel });
+          }
+
+          if (direction === 'left' && rightStatus) {
+            statusLabel = leftStatus || '';
+          } else if (direction === 'right' && leftStatus) {
+            statusLabel = rightStatus || '';
+          }
+
+          if (!statusLabel && direction === 'left' && !rightStatus) {
+            statusLabel = null;
+          } else if (!statusLabel && direction === 'right' && !leftStatus) {
+            statusLabel = null;
+          }
 
           let metricValue = latestValue;
           if (!isNaN(latestValue) && decimalPlaces !== undefined) {
@@ -62,6 +88,16 @@ export default class NrqlMetric extends React.Component {
 
           if (metricValue === undefined || metricValue === null) {
             metricValue = 'null';
+          }
+
+          if (metricLabel === undefined || metricLabel === '') {
+            metricLabel = null;
+          }
+
+          if (direction === 'right' && metricLabelLeft) {
+            metricLabel = '';
+          } else if (direction === 'left' && metricLabelRight) {
+            metricLabel = '';
           }
 
           return (
@@ -107,7 +143,7 @@ export default class NrqlMetric extends React.Component {
                     </div>
                   )}
                 </div>
-                {statusLabel && (
+                {statusLabel !== null && statusLabel !== undefined && (
                   <div
                     className="flex-item"
                     style={{
@@ -117,7 +153,7 @@ export default class NrqlMetric extends React.Component {
                       overflow: 'hidden'
                     }}
                   >
-                    {statusLabel}
+                    {statusLabel || <span>&nbsp;</span>}
                   </div>
                 )}
               </div>
