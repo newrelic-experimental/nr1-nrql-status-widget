@@ -74,7 +74,14 @@ export default class ModalCharts extends React.Component {
         <>
           {queries.map((q, i) => {
             return (
-              <div key={i} style={{ padding: '7px' }}>
+              <div
+                key={i}
+                style={{
+                  padding: '7px',
+                  height:
+                    q.height && !isNaN(q.height) ? `${q.height}px` : undefined
+                }}
+              >
                 {!q.hideTitle && (
                   <HeadingText type={HeadingText.TYPE.HEADING_4}>
                     {q.chartTitle}

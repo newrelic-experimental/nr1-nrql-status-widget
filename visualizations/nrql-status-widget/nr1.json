@@ -180,6 +180,12 @@
               "value": "table"
             }
           ]
+        },
+        {
+          "name": "height",
+          "title": "Height (px) - optional",
+          "description": "Height for widget",
+          "type": "number"
         }
       ]
     },
