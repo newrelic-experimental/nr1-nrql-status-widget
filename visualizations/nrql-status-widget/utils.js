@@ -127,10 +127,10 @@ export const generateErrorsAndConfig = (
 
   (modalQueries || []).forEach((q, i) => {
     if (['line', 'area', 'sparkline'].includes(q.chartType)) {
-      if (!q.query.includes('TIMESERIES')) {
+      if (!q.query.toLowerCase().includes('timeseries')) {
         errors.push(`Modal query ${i + 1} - missing TIMESERIES keyword`);
       }
-    } else if (q.query.includes('TIMESERIES')) {
+    } else if (q.query.toLowerCase().includes('timeseries')) {
       errors.push(
         `Modal query ${i + 1} - should not contain TIMESERIES keyword`
       );
@@ -193,4 +193,39 @@ export const generateErrorsAndConfig = (
   if (!warningThreshold) errors.push('Required: Warning threshold');
 
   return { errors, configuration };
+};
+
+export const generateSloErrors = sloConfig => {
+  const errors = [];
+  const {
+    sloId,
+    sloDays,
+    sloTarget,
+    sloBudget,
+    sloBar,
+    sloDaysToView
+  } = sloConfig;
+
+  if (sloId) {
+    if (!sloDays) {
+      errors.push('SLO ID is set, but time window is not');
+    }
+    if (!sloTarget) {
+      errors.push('SLO ID is set, but SLO target is not');
+    }
+    if (!sloBudget) {
+      errors.push('SLO ID is set, but SLO budget is not');
+    }
+  }
+
+  if (!sloId) {
+    if (sloBar) {
+      errors.push('SLO Status Bar is enabled, but SLO ID is not set');
+    }
+    if (sloDaysToView) {
+      errors.push('SLO Days to view is set, but SLO ID is not set');
+    }
+  }
+
+  return errors;
 };

@@ -1,6 +1,10 @@
 import React from 'react';
 import { NrqlQuery, Spinner, AutoSizer } from 'nr1';
-import { deriveValues, generateErrorsAndConfig } from './utils';
+import {
+  deriveValues,
+  generateErrorsAndConfig,
+  generateSloErrors
+} from './utils';
 import EmptyState from './emptyState';
 import ErrorState from './errorState';
 import Timeline from './timeline';
@@ -15,6 +19,26 @@ export default class NrqlStatusWidget extends React.Component {
       initialized: false
     };
   }
+
+  // componentDidMount() {
+  //   const {
+  //     sloId,
+  //     sloDays,
+  //     sloTarget,
+  //     sloBudget,
+  //     sloBar,
+  //     sloDaysToView
+  //   } = this.props;
+
+  //   const sloConfig = {
+  //     sloId,
+  //     sloDays,
+  //     sloTarget,
+  //     sloBar,
+  //     sloBudget,
+  //     sloDaysToView
+  //   };
+  // }
 
   modalClose = () => {
     this.setState({ modalOpen: false });
@@ -53,11 +77,26 @@ export default class NrqlStatusWidget extends React.Component {
       warningThresholdRight,
       warningLabelRight,
       healthyLabelRight,
-      modalQueries
+      modalQueries,
+      sloId,
+      sloDays,
+      sloTarget,
+      sloBudget,
+      sloBar,
+      sloDaysToView
     } = this.props;
     const validModalQueries = modalQueries.filter(
       q => q.query && q.chartType && q.query.length > 5
     );
+
+    const sloConfig = {
+      sloId,
+      sloDays,
+      sloTarget,
+      sloBar,
+      sloBudget,
+      sloDaysToView
+    };
 
     let leftMetric = null;
     let rightMetric = null;
@@ -101,8 +140,10 @@ export default class NrqlStatusWidget extends React.Component {
       validModalQueries
     );
 
-    if (errors.length > 0) {
-      return <EmptyState errors={errors} />;
+    const sloErrors = generateSloErrors(sloConfig);
+
+    if (errors.length > 0 || sloErrors.length > 0) {
+      return <EmptyState errors={[...errors, ...sloErrors]} />;
     }
 
     const bucketValue =
