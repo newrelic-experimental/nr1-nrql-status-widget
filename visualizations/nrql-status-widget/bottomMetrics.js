@@ -73,7 +73,7 @@ export default class BottomMetrics extends React.Component {
             query={queryLeft}
             accountId={accountId}
             configuration={leftMetric.configuration}
-            altConfiguration={rightMetric.configuration}
+            altConfiguration={rightMetric?.configuration || {}}
             decimalPlaces={decimalPlacesLeft}
             metricSuffix={metricSuffixLeft}
             metricLabel={metricLabelLeft}
@@ -91,7 +91,7 @@ export default class BottomMetrics extends React.Component {
             query={queryRight}
             accountId={accountId}
             configuration={rightMetric.configuration}
-            altConfiguration={leftMetric.configuration}
+            altConfiguration={leftMetric?.configuration || {}}
             decimalPlaces={decimalPlacesRight}
             metricSuffix={metricSuffixRight}
             metricLabel={metricLabelRight}

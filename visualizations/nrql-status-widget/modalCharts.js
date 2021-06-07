@@ -19,46 +19,96 @@ import {
 } from 'nr1';
 
 export default class ModalCharts extends React.Component {
-  renderChart = (accountId, chartType, query) => {
+  renderChart = (accountId, chartType, query, height) => {
     switch (chartType) {
       case 'area': {
-        return <AreaChart accountId={accountId} query={query} />;
+        return (
+          <AreaChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'bar': {
-        return <BarChart accountId={accountId} query={query} />;
+        return (
+          <BarChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'billboard': {
-        return <BillboardChart accountId={accountId} query={query} />;
+        return (
+          <BillboardChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'funnel': {
-        return <FunnelChart accountId={accountId} query={query} />;
+        return (
+          <FunnelChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'heatmap': {
-        return <HeatmapChart accountId={accountId} query={query} />;
+        return (
+          <HeatmapChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'histogram': {
-        return <HistogramChart accountId={accountId} query={query} />;
+        return (
+          <HistogramChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'json': {
-        return <JsonChart accountId={accountId} query={query} />;
+        return (
+          <JsonChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'line': {
-        return <LineChart accountId={accountId} query={query} />;
+        return (
+          <LineChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'pie': {
-        return <PieChart accountId={accountId} query={query} />;
+        return (
+          <PieChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       case 'scatter': {
-        return <ScatterChart accountId={accountId} query={query} />;
+        return (
+          <ScatterChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'sparkline': {
-        return <SparklineChart accountId={accountId} query={query} />;
+        return (
+          <SparklineChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'stackedbar': {
-        return <StackedBarChart accountId={accountId} query={query} />;
+        return (
+          <StackedBarChart
+            accountId={accountId}
+            query={query}
+            style={{ height }}
+          />
+        );
       }
       case 'table': {
-        return <TableChart accountId={accountId} query={query} />;
+        return (
+          <TableChart accountId={accountId} query={query} style={{ height }} />
+        );
       }
       default: {
         return 'Unsupported chart type';
@@ -73,13 +123,15 @@ export default class ModalCharts extends React.Component {
       <Modal hidden={!open} onClose={close}>
         <>
           {queries.map((q, i) => {
+            const height =
+              q.height && !isNaN(q.height) ? `${q.height}px` : undefined;
+
             return (
               <div
                 key={i}
                 style={{
                   padding: '7px',
-                  height:
-                    q.height && !isNaN(q.height) ? `${q.height}px` : undefined
+                  height
                 }}
               >
                 {!q.hideTitle && (
@@ -87,7 +139,7 @@ export default class ModalCharts extends React.Component {
                     {q.chartTitle}
                   </HeadingText>
                 )}
-                {this.renderChart(accountId, q.chartType, q.query)}
+                {this.renderChart(accountId, q.chartType, q.query, height)}
               </div>
             );
           })}
