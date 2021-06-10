@@ -1,5 +1,11 @@
 import React from 'react';
-import { NrqlQuery, Spinner, AutoSizer } from 'nr1';
+import {
+  NrqlQuery,
+  Spinner,
+  AutoSizer,
+  PlatformStateContext,
+  navigation
+} from 'nr1';
 import {
   deriveValues,
   generateErrorsAndConfig,
@@ -161,169 +167,197 @@ export default class NrqlStatusWidget extends React.Component {
       finalQuery += ` ${sinceClause} ${untilValue}`;
     }
 
-    // eslint-disable-next-line
-    console.log(`Query: ${finalQuery}`);
-
-    let chartOnClick;
-
-    if (onClickUrl) {
-      chartOnClick = () => window.open(onClickUrl, '_blank');
-    }
-
-    if (validModalQueries.length > 0) {
-      chartOnClick = () => this.setState({ modalOpen: true });
-    }
+    // // eslint-disable-next-line
+    // console.log(`Query: ${finalQuery}`);
 
     return (
       <AutoSizer>
         {({ width, height }) => (
-          <>
-            <ModalCharts
-              open={modalOpen}
-              close={this.modalClose}
-              queries={validModalQueries}
-              accountId={accountId}
-            />
-            <NrqlQuery
-              query={finalQuery}
-              accountId={parseInt(accountId)}
-              pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
-            >
-              {({ data, loading, error }) => {
-                if (loading) {
-                  return <Spinner />;
-                }
+          <PlatformStateContext.Consumer>
+            {platformState => {
+              // eslint-disable-next-line
+              console.log(platformState);
 
-                if (error && initialized === false) {
-                  return (
-                    <ErrorState
-                      error={error.message || ''}
-                      query={finalQuery}
-                    />
-                  );
-                }
+              let chartOnClick;
 
-                if (initialized === false) {
-                  this.setState({ initialized: true });
-                }
+              if (onClickUrl) {
+                chartOnClick = () => window.open(onClickUrl, '_blank');
+              }
 
-                if (initialized === true && error) {
-                  setTimeout(() => {
-                    // eslint-disable-next-line
-                    console.log(`NRQL error for ${finalQuery} \nError: ${error}\nReloading...`);
-                    window.location.reload();
-                  }, 5000);
-                }
+              if (validModalQueries.length > 0) {
+                const nerdlet = {
+                  id: 'custom-modal',
+                  urlState: {
+                    accountId: parseInt(accountId),
+                    queries: validModalQueries,
+                    timeRange: platformState.timeRange,
+                    height,
+                    width
+                  }
+                };
 
-                const derivedValues = deriveValues(data, configuration);
+                chartOnClick = () => navigation.openStackedNerdlet(nerdlet);
 
-                const {
-                  status,
-                  statusLabel,
-                  latestValue,
-                  timeseries
-                } = derivedValues;
+                // chartOnClick = () => this.setState({ modalOpen: true });
+              }
 
-                let metricValue = latestValue;
-                if (!isNaN(latestValue) && decimalPlaces !== undefined) {
-                  metricValue = latestValue.toFixed(decimalPlaces);
-                }
-
-                if (metricValue === undefined || metricValue === null) {
-                  metricValue = 'null';
-                }
-
-                return (
-                  <div
-                    style={{
-                      width,
-                      height,
-                      maxWidth: width,
-                      maxHeight: height
-                    }}
-                    className={`${status}-bg flex-container`}
+              return (
+                <>
+                  <ModalCharts
+                    open={modalOpen}
+                    close={this.modalClose}
+                    queries={validModalQueries}
+                    accountId={accountId}
+                  />
+                  <NrqlQuery
+                    query={finalQuery}
+                    accountId={parseInt(accountId)}
+                    pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
                   >
-                    <div className="flex-col">
-                      {displayMetric && (
+                    {({ data, loading, error }) => {
+                      if (loading) {
+                        return <Spinner />;
+                      }
+
+                      if (error && initialized === false) {
+                        return (
+                          <ErrorState
+                            error={error.message || ''}
+                            query={finalQuery}
+                          />
+                        );
+                      }
+
+                      if (initialized === false) {
+                        this.setState({ initialized: true });
+                      }
+
+                      if (initialized === true && error) {
+                        setTimeout(() => {
+                          // eslint-disable-next-line
+                    console.log(`NRQL error for ${finalQuery} \nError: ${JSON.stringify(error)}\nReloading...`);
+                          window.location.reload();
+                        }, 5000);
+                      }
+
+                      const derivedValues = deriveValues(data, configuration);
+
+                      const {
+                        status,
+                        statusLabel,
+                        latestValue,
+                        timeseries
+                      } = derivedValues;
+
+                      let metricValue = latestValue;
+                      if (!isNaN(latestValue) && decimalPlaces !== undefined) {
+                        metricValue = latestValue.toFixed(decimalPlaces);
+                      }
+
+                      if (metricValue === undefined || metricValue === null) {
+                        // eslint-disable-next-line
+                  console.log(
+                          `${finalQuery} : returning null\nvalue: ${latestValue}\ndata: ${data}\nError: ${JSON.stringify(
+                            error
+                          )}`
+                        );
+                        metricValue = 'null';
+                      }
+
+                      return (
                         <div
-                          onClick={chartOnClick}
-                          title={metricValue}
-                          className="flex-item"
                           style={{
-                            color: 'white',
-                            fontSize: '17vh',
                             width,
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            marginTop:
-                              queryRight || queryLeft ? '-19vh' : '0px',
-                            cursor: chartOnClick ? 'pointer' : 'default'
+                            height,
+                            maxWidth: width,
+                            maxHeight: height
                           }}
+                          className={`${status}-bg flex-container`}
                         >
-                          {metricValue}
-                          {metricSuffix && (
-                            <div
-                              style={{
-                                display: 'inline',
-                                fontSize: '14vh',
-                                verticalAlign: 'top',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden'
-                              }}
-                            >
-                              &nbsp;{metricSuffix}
-                            </div>
-                          )}
-                          {metricLabel && (
-                            <div
-                              style={{
-                                marginTop: '-5vh',
-                                fontSize: '6vh',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden'
-                              }}
-                            >
-                              {metricLabel}
-                            </div>
+                          <div className="flex-col">
+                            {displayMetric && (
+                              <div
+                                onClick={chartOnClick}
+                                title={metricValue}
+                                className="flex-item"
+                                style={{
+                                  color: 'white',
+                                  fontSize: '17vh',
+                                  width,
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  marginTop:
+                                    queryRight || queryLeft ? '-19vh' : '0px',
+                                  cursor: chartOnClick ? 'pointer' : 'default'
+                                }}
+                              >
+                                {metricValue}
+                                {metricSuffix && (
+                                  <div
+                                    style={{
+                                      display: 'inline',
+                                      fontSize: '14vh',
+                                      verticalAlign: 'top',
+                                      textOverflow: 'ellipsis',
+                                      overflow: 'hidden'
+                                    }}
+                                  >
+                                    &nbsp;{metricSuffix}
+                                  </div>
+                                )}
+                                {metricLabel && (
+                                  <div
+                                    style={{
+                                      marginTop: '-5vh',
+                                      fontSize: '6vh',
+                                      textOverflow: 'ellipsis',
+                                      overflow: 'hidden'
+                                    }}
+                                  >
+                                    {metricLabel}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {statusLabel && (
+                              <div
+                                className="flex-item"
+                                style={{
+                                  color: 'white',
+                                  fontSize: displayMetric ? '10vh' : '17vh',
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                {statusLabel}
+                              </div>
+                            )}
+                          </div>
+
+                          <BottomMetrics
+                            leftMetric={leftMetric}
+                            rightMetric={rightMetric}
+                            displayTimeline={displayTimeline}
+                            width={width}
+                            height={height}
+                            mainProps={this.props}
+                          />
+
+                          {displayTimeline && (
+                            <Timeline
+                              displayMetric={displayMetric}
+                              timeseries={timeseries}
+                              width={width}
+                            />
                           )}
                         </div>
-                      )}
-                      {statusLabel && (
-                        <div
-                          className="flex-item"
-                          style={{
-                            color: 'white',
-                            fontSize: displayMetric ? '10vh' : '17vh',
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden'
-                          }}
-                        >
-                          {statusLabel}
-                        </div>
-                      )}
-                    </div>
-
-                    <BottomMetrics
-                      leftMetric={leftMetric}
-                      rightMetric={rightMetric}
-                      displayTimeline={displayTimeline}
-                      width={width}
-                      height={height}
-                      mainProps={this.props}
-                    />
-
-                    {displayTimeline && (
-                      <Timeline
-                        displayMetric={displayMetric}
-                        timeseries={timeseries}
-                        width={width}
-                      />
-                    )}
-                  </div>
-                );
-              }}
-            </NrqlQuery>
-          </>
+                      );
+                    }}
+                  </NrqlQuery>
+                </>
+              );
+            }}
+          </PlatformStateContext.Consumer>
         )}
       </AutoSizer>
     );

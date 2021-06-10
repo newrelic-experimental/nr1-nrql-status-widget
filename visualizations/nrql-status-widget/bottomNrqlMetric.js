@@ -53,7 +53,7 @@ export default class NrqlMetric extends React.Component {
           if (initialized === true && error) {
             setTimeout(() => {
               // eslint-disable-next-line
-              console.log(`NRQL error for ${finalQuery} \nError: ${error}\nReloading...`);
+              console.log(`NRQL error for ${query} \nError: ${JSON.stringify(error)}\nReloading...`);
               window.location.reload();
             }, 5000);
           }
@@ -87,6 +87,12 @@ export default class NrqlMetric extends React.Component {
           }
 
           if (metricValue === undefined || metricValue === null) {
+            // eslint-disable-next-line
+            console.log(
+              `${query} : returning null\nvalue: ${latestValue}\ndata: ${data}\nError: ${JSON.stringify(
+                error
+              )}`
+            );
             metricValue = 'null';
           }
 
