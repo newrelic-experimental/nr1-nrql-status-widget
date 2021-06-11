@@ -1,5 +1,5 @@
 import React from 'react';
-import { NrqlQuery, Spinner, AutoSizer, navigation } from 'nr1';
+import { NrqlQuery, Spinner, navigation } from 'nr1';
 import {
   deriveValues,
   generateErrorsAndConfig,
@@ -59,6 +59,8 @@ export default class StatusWidget extends React.Component {
   render() {
     const { modalOpen, initialized, timeRange, timeRangeResult } = this.state;
     const {
+      width,
+      height,
       accountId,
       query,
       timelineBucket,
@@ -169,196 +171,184 @@ export default class StatusWidget extends React.Component {
     // // eslint-disable-next-line
     // console.log(`Query: ${finalQuery}`);
 
+    if (
+      !query.toLowerCase().includes('since') &&
+      !query.toLowerCase().includes('until')
+    ) {
+      finalQuery += ` ${sinceClause} ${untilValue}`;
+    }
+
+    let chartOnClick;
+
+    if (onClickUrl) {
+      chartOnClick = () => window.open(onClickUrl, '_blank');
+    }
+
+    if (validModalQueries.length > 0) {
+      const nerdlet = {
+        id: 'custom-modal',
+        urlState: {
+          accountId: parseInt(accountId),
+          queries: validModalQueries,
+          timeRange,
+          height,
+          width
+        }
+      };
+
+      chartOnClick = () => navigation.openStackedNerdlet(nerdlet);
+    }
+
     return (
-      <AutoSizer>
-        {({ width, height }) => {
-          if (
-            !query.toLowerCase().includes('since') &&
-            !query.toLowerCase().includes('until')
-          ) {
-            finalQuery += ` ${sinceClause} ${untilValue}`;
-          }
+      <>
+        <ModalCharts
+          open={modalOpen}
+          close={this.modalClose}
+          queries={validModalQueries}
+          accountId={accountId}
+        />
+        <NrqlQuery
+          query={finalQuery}
+          accountId={parseInt(accountId)}
+          pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
+        >
+          {({ data, loading, error }) => {
+            if (loading) {
+              return <Spinner />;
+            }
 
-          let chartOnClick;
+            if (error && initialized === false) {
+              return (
+                <ErrorState error={error.message || ''} query={finalQuery} />
+              );
+            }
 
-          if (onClickUrl) {
-            chartOnClick = () => window.open(onClickUrl, '_blank');
-          }
+            if (initialized === false) {
+              this.setState({ initialized: true });
+            }
 
-          if (validModalQueries.length > 0) {
-            const nerdlet = {
-              id: 'custom-modal',
-              urlState: {
-                accountId: parseInt(accountId),
-                queries: validModalQueries,
-                timeRange,
-                height,
-                width
-              }
-            };
+            if (initialized === true && error) {
+              setTimeout(() => {
+                // eslint-disable-next-line
+                console.log(`NRQL error for ${finalQuery} \nError: ${JSON.stringify(error)}\nReloading...`);
+                window.location.reload();
+              }, 5000);
+            }
 
-            chartOnClick = () => navigation.openStackedNerdlet(nerdlet);
+            const derivedValues = deriveValues(data, configuration);
 
-            // chartOnClick = () => this.setState({ modalOpen: true });
-          }
+            const {
+              status,
+              statusLabel,
+              latestValue,
+              timeseries
+            } = derivedValues;
 
-          return (
-            <>
-              <ModalCharts
-                open={modalOpen}
-                close={this.modalClose}
-                queries={validModalQueries}
-                accountId={accountId}
-              />
-              <NrqlQuery
-                query={finalQuery}
-                accountId={parseInt(accountId)}
-                pollInterval={NrqlQuery.AUTO_POLL_INTERVAL}
-              >
-                {({ data, loading, error }) => {
-                  if (loading) {
-                    return <Spinner />;
-                  }
+            let metricValue = latestValue;
+            if (!isNaN(latestValue) && decimalPlaces !== undefined) {
+              metricValue = latestValue.toFixed(decimalPlaces);
+            }
 
-                  if (error && initialized === false) {
-                    return (
-                      <ErrorState
-                        error={error.message || ''}
-                        query={finalQuery}
-                      />
-                    );
-                  }
-
-                  if (initialized === false) {
-                    this.setState({ initialized: true });
-                  }
-
-                  if (initialized === true && error) {
-                    setTimeout(() => {
-                      // eslint-disable-next-line
-                      console.log(`NRQL error for ${finalQuery} \nError: ${JSON.stringify(error)}\nReloading...`);
-                      window.location.reload();
-                    }, 5000);
-                  }
-
-                  const derivedValues = deriveValues(data, configuration);
-
-                  const {
-                    status,
-                    statusLabel,
-                    latestValue,
-                    timeseries
-                  } = derivedValues;
-
-                  let metricValue = latestValue;
-                  if (!isNaN(latestValue) && decimalPlaces !== undefined) {
-                    metricValue = latestValue.toFixed(decimalPlaces);
-                  }
-
-                  if (metricValue === undefined || metricValue === null) {
-                    // eslint-disable-next-line
+            if (metricValue === undefined || metricValue === null) {
+              // eslint-disable-next-line
                   console.log(
-                      `${finalQuery} : returning null\nvalue: ${latestValue}\ndata: ${data}\nError: ${JSON.stringify(
-                        error
-                      )}`
-                    );
-                    metricValue = 'null';
-                  }
+                `${finalQuery} : returning null\nvalue: ${latestValue}\ndata: ${data}\nError: ${JSON.stringify(
+                  error
+                )}`
+              );
+              metricValue = 'null';
+            }
 
-                  return (
+            return (
+              <div
+                style={{
+                  width,
+                  height,
+                  maxWidth: width,
+                  maxHeight: height
+                }}
+                className={`${status}-bg flex-container`}
+              >
+                <div className="flex-col">
+                  {displayMetric && (
                     <div
+                      onClick={chartOnClick}
+                      title={timeRangeResult || metricValue}
+                      className="flex-item"
                       style={{
+                        color: 'white',
+                        fontSize: '17vh',
                         width,
-                        height,
-                        maxWidth: width,
-                        maxHeight: height
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        marginTop: queryRight || queryLeft ? '-19vh' : '0px',
+                        cursor: chartOnClick ? 'pointer' : 'default'
                       }}
-                      className={`${status}-bg flex-container`}
                     >
-                      <div className="flex-col">
-                        {displayMetric && (
-                          <div
-                            onClick={chartOnClick}
-                            title={timeRangeResult || metricValue}
-                            className="flex-item"
-                            style={{
-                              color: 'white',
-                              fontSize: '17vh',
-                              width,
-                              textOverflow: 'ellipsis',
-                              overflow: 'hidden',
-                              marginTop:
-                                queryRight || queryLeft ? '-19vh' : '0px',
-                              cursor: chartOnClick ? 'pointer' : 'default'
-                            }}
-                          >
-                            {timeRangeResult || metricValue}
-                            {metricSuffix && (
-                              <div
-                                style={{
-                                  display: 'inline',
-                                  fontSize: '14vh',
-                                  verticalAlign: 'top',
-                                  textOverflow: 'ellipsis',
-                                  overflow: 'hidden'
-                                }}
-                              >
-                                &nbsp;{metricSuffix}
-                              </div>
-                            )}
-                            {metricLabel && (
-                              <div
-                                style={{
-                                  marginTop: '-5vh',
-                                  fontSize: '6vh',
-                                  textOverflow: 'ellipsis',
-                                  overflow: 'hidden'
-                                }}
-                              >
-                                {metricLabel}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        {statusLabel && (
-                          <div
-                            className="flex-item"
-                            style={{
-                              color: 'white',
-                              fontSize: displayMetric ? '10vh' : '17vh',
-                              textOverflow: 'ellipsis',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            {statusLabel}
-                          </div>
-                        )}
-                      </div>
-
-                      <BottomMetrics
-                        leftMetric={leftMetric}
-                        rightMetric={rightMetric}
-                        displayTimeline={displayTimeline}
-                        width={width}
-                        height={height}
-                        mainProps={this.props}
-                      />
-
-                      {displayTimeline && (
-                        <Timeline
-                          displayMetric={displayMetric}
-                          timeseries={timeseries}
-                          width={width}
-                        />
+                      {timeRangeResult || metricValue}
+                      {metricSuffix && (
+                        <div
+                          style={{
+                            display: 'inline',
+                            fontSize: '14vh',
+                            verticalAlign: 'top',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          &nbsp;{metricSuffix}
+                        </div>
+                      )}
+                      {metricLabel && (
+                        <div
+                          style={{
+                            marginTop: '-5vh',
+                            fontSize: '6vh',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {metricLabel}
+                        </div>
                       )}
                     </div>
-                  );
-                }}
-              </NrqlQuery>
-            </>
-          );
-        }}
-      </AutoSizer>
+                  )}
+                  {statusLabel && (
+                    <div
+                      className="flex-item"
+                      style={{
+                        color: 'white',
+                        fontSize: displayMetric ? '10vh' : '17vh',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {statusLabel}
+                    </div>
+                  )}
+                </div>
+
+                <BottomMetrics
+                  leftMetric={leftMetric}
+                  rightMetric={rightMetric}
+                  displayTimeline={displayTimeline}
+                  width={width}
+                  height={height}
+                  mainProps={this.props}
+                />
+
+                {displayTimeline && (
+                  <Timeline
+                    displayMetric={displayMetric}
+                    timeseries={timeseries}
+                    width={width}
+                  />
+                )}
+              </div>
+            );
+          }}
+        </NrqlQuery>
+      </>
     );
   }
 }
