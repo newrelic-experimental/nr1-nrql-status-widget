@@ -25,7 +25,9 @@ export default class Timeline extends React.Component {
         {timeseries.map((ts, i) => {
           const beginDate = new Date(ts.begin_time);
           const endDate = new Date(ts.end_time);
-          const hoverText = `${beginDate.toLocaleTimeString()} - ${endDate.toLocaleTimeString()}`;
+          const hoverText = `${beginDate.toLocaleTimeString()} - ${endDate.toLocaleTimeString()}\n${
+            ts.value
+          }`;
 
           return (
             <Tooltip

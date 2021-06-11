@@ -188,6 +188,11 @@ export const generateErrorsAndConfig = (
         'Query contains timeseries and/or facet and should be removed'
       );
     }
+    if (lowerQuery.includes('since') || lowerQuery.includes('until')) {
+      errors.push(
+        'Query contains since and/or until and should be removed, use the parameters further below to set'
+      );
+    }
   }
   if (!criticalThreshold) errors.push('Required: Critical threshold');
   if (!warningThreshold) errors.push('Required: Warning threshold');
